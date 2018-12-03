@@ -1,0 +1,113 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AdventOfCode2018
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int dupe = 0;
+            int triple = 0;
+            string[] input = File.ReadAllLines(@"advent2.txt");
+            foreach (var line in input)
+            {
+                bool dva = false;
+                bool tri = false;
+                char[] znak = new char[line.Length];
+                znak = line.ToCharArray();
+                var asd = new Dictionary<char, char>();
+                foreach (char item in znak)
+                {
+                    if (asd.ContainsKey(item))
+                        asd[item]++;
+                    else
+                        asd[item] = '1';
+                }
+                foreach (var pair in asd)
+                {
+                    if (pair.Value == '2' && dva == false)
+                    {
+                        dupe++;
+                        dva = true;
+
+                    }
+                    if (pair.Value == '3' && tri == false)
+                    {
+                        triple++;
+                        tri = true;
+                    }
+                }
+            }
+            Console.WriteLine("Výsledek: {0} * {1} -> " + triple * dupe,dupe,triple);
+
+
+
+            // part 2
+            int error = 0;
+            string vysledek1 ="";
+            string vysledek2 ="";
+            for (int i = 0; i < input.Length; i++) // vezme první slovo
+            {
+                for (int j = 0; j < input.Length; j++) // porovná ho se vsemi ostatními
+                {
+                    if (i != j) // neporovnává se s sebou
+                    {
+                        char[] prvni = input[i].ToCharArray();
+                        char[] druhe = input[j].ToCharArray();
+
+                        for (int k = 0; k < prvni.Length; k++) // porovná znaky
+                        {
+                            //Console.Write("Porovnáávám {0} s {1}     ", input[i], input[j]);
+                            if (error > 1)
+                            {
+                                //Console.Write("Znaky na pozici {0} se liší! -> {1} / {2}   ", k, prvni[k], druhe[k]);
+                                //Console.WriteLine("Druhá chyba");
+                                error = 0;
+                                break;
+                            }
+                            if (prvni[k] == druhe[k])
+                            {
+                                //Console.WriteLine("Znaky na pozici {0} jsou stejné -> {1} / {2}", k, prvni[k], druhe[k]);
+                            }
+                            else
+                            {
+                                //Console.WriteLine("Znaky na pozici {0} se liší! -> {1} / {2}", k, prvni[k], druhe[k]);
+                                error++;
+                            }
+                            
+
+                        }
+                        
+                        if (error == 1)
+                        {
+                            //Console.WriteLine("Znaky {0} a {1} se minimálnì liší!", input[i], input[j]);
+                            vysledek1 = input[i];
+                            vysledek2 = input[j];
+                        }
+                    }
+                }
+            }
+
+            Console.WriteLine("Slova {0} a {1} se minimálnì liší", vysledek1, vysledek2);
+            int u =0;
+            Console.Write("Spoleèné znaky -> ");
+            foreach (var item in vysledek1.ToCharArray())
+            {
+
+                char[] druhe = vysledek2.ToCharArray();
+                if (item == druhe[u])
+                {
+                    Console.Write(item);
+                    
+                }
+                u++;
+            }
+            Console.ReadKey();
+        }
+    }
+}
