@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AdventOfCode2018
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            int poleX = 2000;
+            int poleY = 2000;
+
+            string[] input = File.ReadAllLines(@"advent3.txt");
+            string[,] latka = new string[poleX, poleY];
+            int chyba = 0;
+            string[,] overlap = new string [2,input.Length];
+            for (int i = 0; i < input.Length; i++)
+            {
+                input[i] = input[i].Replace("@ ", "");
+                input[i] = input[i].Replace(":", "");
+                input[i] = input[i].Replace("#", "");
+                string[] strih = input[i].Split(' ');
+                int startX = 0;
+                int startY = 0;
+
+                int velikostX = 0;
+                int velikostY = 0;
+
+                for (int j = 0; j < strih.Length; j++)
+                {
+                    if (j == 1) // poèátek støihu
+                    {
+                        string[] coord = new string[2];
+                        coord = strih[1].Split(',');
+                        startX = int.Parse(coord[1]);
+                        startY = int.Parse(coord[0]);
+                    }
+                    if (j == 2) // urèení velikosti støihu
+                    {
+                        string[] coord = new string[2];
+                        coord = strih[2].Split('x');
+                        velikostX = int.Parse(coord[0]);
+                        velikostY = int.Parse(coord[1]);
+                    }
+                    for (int l = 0; l < velikostX; l++) // zabrání potøebného prostoru
+                    {
+                        
+                        for (int z = 0; z < velikostY; z++)
+                        {
+                            if (latka[startX + z, startY + l] == null)
+                            {
+                                latka[startX + z, startY + l] = strih[0];
+                                overlap[0, int.Parse(strih[0])-1] = strih[0];
+                                if (overlap[1, int.Parse(strih[0]) - 1] != "true") overlap[1, int.Parse(strih[0])-1] = "false";
+                            }
+                            else
+                            {
+                                latka[startX + z, startY + l] = "#";
+                                overlap[0, int.Parse(strih[0])-1] = strih[0];
+                                overlap[1, int.Parse(strih[0])-1] = "true";
+                            }
+                        }
+                    } 
+                }
+            }
+            for (int i = 0; i < input.Length; i++)
+            {
+                string[] strih = input[i].Split(' ');
+                int startX = 0;
+                int startY = 0;
+
+                int velikostX = 0;
+                int velikostY = 0;
+
+                for (int j = 0; j < strih.Length; j++)
+                {
+                    if (j == 1) // poèátek støihu
+                    {
+                        string[] coord = new string[2];
+                        coord = strih[1].Split(',');
+                        startX = int.Parse(coord[1]);
+                        startY = int.Parse(coord[0]);
+                    }
+                    if (j == 2) // urèení velikosti støihu
+                    {
+                        string[] coord = new string[2];
+                        coord = strih[2].Split('x');
+                        velikostX = int.Parse(coord[0]);
+                        velikostY = int.Parse(coord[1]);
+                    }
+                    // znovu projede všechna pole pro kolize
+                    for (int l = 0; l < velikostX; l++)
+                    {
+                        for (int z = 0; z < velikostY; z++)
+                        {
+                            if (latka[startX + z, startY + l] == strih[0])
+                            {
+                                if (overlap[1, int.Parse(strih[0]) - 1] != "true") overlap[1, int.Parse(strih[0]) - 1] = "false";
+                            }
+                            else
+                            {
+                                overlap[1, int.Parse(strih[0]) - 1] = "true";
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < poleX; i++)
+            {
+                for (int j = 0; j < poleY; j++)
+                {
+                    if (latka[i, j] == null) latka[i, j] = ".";
+                    if (latka[i,j] == "#")
+                    {
+                        chyba++;
+                    }
+                }
+            }
+            Console.WriteLine("Poèet pøekrytí: "+chyba);
+
+            for (int j = 0; j < input.Length; j++)
+            {
+                if (overlap[1, j] == "false")
+                {
+                    Console.WriteLine("#"+overlap[0, j] + " se nepøekrývá");
+                }
+            }
+
+            Console.ReadKey();
+        }
+    }
+}
