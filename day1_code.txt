@@ -9,30 +9,41 @@ namespace AdventOfCode2018
 {
     class Program
     {
+        private static string[] _input = File.ReadAllLines("day1_input.txt");
         static void Main(string[] args)
         {
-            var freq = 0;
-            string[] lines = File.ReadAllLines(@"advent1.txt");
-            int[] pamet = new int[lines.Length];
-            int l = 0;
-            foreach (var line in lines)
-            {
-                
-                var cislo = int.Parse(line.Substring(1));
-                
-                if (line.StartsWith("+"))
-                {
-                    freq = freq + cislo;
-                }
-                else
-                {
-                    freq = freq - cislo;
-                }
-                pamet[l] = freq;
-                l++;
-            }
-            Console.WriteLine("Výsledek: " + freq);
+            
+            Console.WriteLine("Part 1 answer: " + Part1());
+            Console.WriteLine("Part 2 answer: " + Part2());
+            Console.WriteLine("Press any key to continue . . .");
             Console.ReadKey();
+        }
+
+        static int Part1()
+        {
+            return _input.Sum(int.Parse);
+        }
+        static int Part2()
+        {
+            var total = 0;
+
+            var foundFreq = new List<int>();
+
+            while (true)
+            {
+                foreach (var line in _input)
+                {
+                    total += int.Parse(line);
+                    if (foundFreq.Contains(total))
+                    {
+                        return total;
+                    }
+                    else
+                    {
+                        foundFreq.Add(total);
+                    }
+                }
+            }
         }
     }
 }
