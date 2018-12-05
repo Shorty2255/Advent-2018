@@ -9,12 +9,21 @@ namespace AdventOfCode2018
 {
     class Program
     {
+        private static string[] _input = File.ReadAllLines("day2_input.txt");
         static void Main(string[] args)
+        {
+            
+            Console.WriteLine("Part 1 answer: " + Part1());
+            Console.WriteLine("Part 2 answer: " + Part2());
+            Console.WriteLine("Press any key to continue . . .");
+            Console.ReadKey();
+        }
+
+        static int Part1()
         {
             int dupe = 0;
             int triple = 0;
-            string[] input = File.ReadAllLines(@"advent2.txt");
-            foreach (var line in input)
+            foreach (var line in _input)
             {
                 bool dva = false;
                 bool tri = false;
@@ -43,14 +52,15 @@ namespace AdventOfCode2018
                     }
                 }
             }
-            Console.WriteLine("Výsledek: {0} * {1} -> " + triple * dupe,dupe,triple);
-
-
-
+            return triple * dupe;
+        }
+        static string Part2()
+        {
             // part 2
+            var input = _input;
             int error = 0;
-            string vysledek1 ="";
-            string vysledek2 ="";
+            string vysledek1 = "";
+            string vysledek2 = "";
             for (int i = 0; i < input.Length; i++) // vezme první slovo
             {
                 for (int j = 0; j < input.Length; j++) // porovná ho se vsemi ostatními
@@ -62,52 +72,40 @@ namespace AdventOfCode2018
 
                         for (int k = 0; k < prvni.Length; k++) // porovná znaky
                         {
-                            //Console.Write("Porovnáávám {0} s {1}     ", input[i], input[j]);
                             if (error > 1)
                             {
-                                //Console.Write("Znaky na pozici {0} se liší! -> {1} / {2}   ", k, prvni[k], druhe[k]);
-                                //Console.WriteLine("Druhá chyba");
                                 error = 0;
                                 break;
                             }
-                            if (prvni[k] == druhe[k])
+                            if (prvni[k] != druhe[k])
                             {
-                                //Console.WriteLine("Znaky na pozici {0} jsou stejné -> {1} / {2}", k, prvni[k], druhe[k]);
-                            }
-                            else
-                            {
-                                //Console.WriteLine("Znaky na pozici {0} se liší! -> {1} / {2}", k, prvni[k], druhe[k]);
                                 error++;
                             }
-                            
+
 
                         }
-                        
+
                         if (error == 1)
                         {
-                            //Console.WriteLine("Znaky {0} a {1} se minimálnì liší!", input[i], input[j]);
                             vysledek1 = input[i];
                             vysledek2 = input[j];
                         }
                     }
                 }
             }
-
-            Console.WriteLine("Slova {0} a {1} se minimálnì liší", vysledek1, vysledek2);
-            int u =0;
-            Console.Write("Spoleèné znaky -> ");
+            int u = 0;
+            var text = "";
             foreach (var item in vysledek1.ToCharArray())
             {
 
                 char[] druhe = vysledek2.ToCharArray();
                 if (item == druhe[u])
                 {
-                    Console.Write(item);
-                    
+                    text += item;
                 }
                 u++;
             }
-            Console.ReadKey();
+            return text;
         }
     }
 }
