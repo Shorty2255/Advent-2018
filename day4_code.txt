@@ -1,0 +1,126 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AdventOfCode2018
+{
+    class Program
+    {
+        class Guard
+        {
+            public int ID { get; set; }
+            public int[] stav { get; set; } = new int[60];
+            public int sluzbaM { get; set; }
+            public int sluzbaD { get; set; }
+            public string FormattedDate
+            {
+                get { return sluzbaM + "-" + (sluzbaD < 10 ? "0" + sluzbaD : "" + sluzbaD); }
+            }
+            public int minsTotal
+            {
+                get { return stav.Sum(); }
+            }
+        }
+        class Event
+        {
+            public DateTime cas { get; set; }
+            public string text { get; set; }
+        }
+        private static string[] _input = File.ReadAllLines("day4_input.txt");
+        private static List<Guard> guards = new List<Guard>();
+        private static List<Event> events = new List<Event>();
+
+        private static int max = -1;
+        private static int id = -1;
+        private static int maxMinute = -1;
+
+        static void Main(string[] args)
+        {
+            for (int i = 0; i < _input.Length; i++)
+            {
+                var date = DateTime.ParseExact(_input[i].Substring(1, 16), "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture); // Parsnutí datumu z textu
+                events.Add(new Event()  //vytvoøení obecného eventu
+                {
+                    text = _input[i].Substring(19),
+                    cas = date
+                });
+            }
+            events = events.OrderBy(x => x.cas).ToList();   // seøazení eventù podle èasu
+            Guard guard = null;
+            for (int i = 0; i < events.Count; i++) //roztøídìní eventù
+            {
+                // nastupuje nový hlídaè
+                if (events[i].text.EndsWith("begins shift"))
+                {
+                    var GuardId = int.Parse(events[i].text.Replace(" begins shift", "").Substring(7));
+                    guard = guards.FirstOrDefault(x => x.ID == GuardId); //koukne, zda hlídaèe zná
+                    if (guard == null)
+                    {
+                        guard = new Guard()
+                        {
+                            ID = GuardId,
+                            sluzbaD = events[i].cas.Day,
+                            sluzbaM = events[i].cas.Month
+                        };
+                        guards.Add(guard);
+                    }
+                };
+                if (events[i].text.EndsWith("falls asleep")) // event SLEEP
+                {
+                    for (var j = events[i].cas.Minute; j < events[i + 1].cas.Minute; j++) //za kolik minut byl event WAKE UP (eventy musí být po sobì)
+                    {
+                        guard.stav[j]++;
+                    }
+                }
+            }
+            Console.WriteLine("Part 1 answer: " + Part1());
+            Console.WriteLine("Part 2 answer: " + Part2());
+            Console.WriteLine("\nPress any key to continue . . .");
+            Console.ReadKey();
+        }
+
+        static int Part1()
+        {
+            var sortedMinGuards = guards.OrderBy(x => x.minsTotal).ToList(); //seøazeno podle èasu spaní
+            var Guard = sortedMinGuards[sortedMinGuards.Count - 1]; //poslední hlídaè v seznamu spáèù (naspal nejvíc)
+            for (int mi = 0; mi < 60; mi++) //zjistí v jakou minutu nejcasteji spal
+            {
+                var min = Guard.stav[mi];
+                if (min > max)
+                {
+                    id = Guard.ID;
+                    max = min;
+                    maxMinute = mi;
+                }
+            }
+            return id * maxMinute;
+        }
+        static int Part2()
+        {
+            var sortedGuards = guards.OrderBy(x => x.minsTotal).ToList(); //seøazeno podle èasu spaní
+
+            var max = -1;
+            var maxId = -1;
+            var maxMinute = -1;
+
+            foreach (var g in sortedGuards)
+            {
+                for (int mi = 0; mi < 60; mi++)
+                {
+                    var min = g.stav[mi];
+                    if (min > max)
+                    {
+                        maxId = g.ID;
+                        max = min;
+                        maxMinute = mi;
+                    }
+                }
+            }
+            return maxId * maxMinute;
+        }
+    }
+}
