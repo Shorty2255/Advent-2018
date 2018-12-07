@@ -1,0 +1,82 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace AdventOfCode2018
+{
+    class Program
+    {
+        private static string _input = File.ReadAllText("day5_input.txt");
+        static void Main(string[] args)
+        {
+
+            Console.WriteLine("Part 1 answer: " + Part1());
+            Console.WriteLine("Part 2 answer: " + Part2());
+            Console.WriteLine("Press any key to continue . . .");
+            Console.ReadKey();
+        }
+
+        static int Part1()
+        {
+            var chars = new List<char>();
+            foreach (var item in _input)
+            {
+                if (chars.Count == 0)
+                {
+                    chars.Add(item);
+                }
+                else
+                {
+                    var last = chars[chars.Count - 1];
+                    if (item != last && item.ToString().ToUpper() == last.ToString().ToUpper())
+                    {
+                        chars.RemoveAt(chars.Count - 1);
+                    }
+                    else
+                    {
+                        chars.Add(item);
+                    }
+                }
+            }
+            return chars.Count; 
+        }
+        static int Part2()
+        {
+            var min = int.MaxValue;
+
+            for (var i = 'a'; i < 'z'; i++)
+            {
+                string reduced = _input.Replace(i.ToString(), "").Replace(i.ToString().ToUpper(), "");
+
+                var chars = new List<char>();
+                foreach (var item in reduced)
+                {
+                    if (chars.Count == 0)
+                    {
+                        chars.Add(item);
+                    }
+                    else
+                    {
+                        var last = chars[chars.Count - 1];
+                        if (item != last && item.ToString().ToUpper() == last.ToString().ToUpper())
+                        {
+                            chars.RemoveAt(chars.Count - 1);
+                        }
+                        else
+                        {
+                            chars.Add(item);
+                        }
+                    }
+                }
+                if (min > chars.Count)
+                {
+                    min = chars.Count;
+                }
+            }
+            return min;
+        }
+    }
+}
